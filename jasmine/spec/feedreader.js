@@ -28,7 +28,7 @@ $(function() {
         it('url are defined', function() {
             allFeeds.forEach(function(feed) {
                 expect(feed.url).toBeDefined();
-                expect(feed.url).not.toBeNull();
+                expect(feed.url.length).not.toBe(0);
             });
         });
 
@@ -38,7 +38,7 @@ $(function() {
         it('name are defined', function() {
             allFeeds.forEach(function(feed) {
                 expect(feed.name).toBeDefined();
-                expect(feed.name).not.toBeNull();
+                expect(feed.name).not.toBe("");
             });
         });
     });
@@ -70,7 +70,7 @@ $(function() {
         it('manu click to toggleClass with visible and hidden', function() {
             menuIcon.trigger('click'); //空的 click()执行的是 trigger(),触发事件的默认行为
             expect(bodyStyle.hasClass('menu-hidden')).toBeFalsy();
-		});
+        });
         it('manu click to toggleClass with hidden', function() {
             menuIcon.trigger('click');
             expect(bodyStyle.hasClass('menu-hidden')).toBeTruthy();
@@ -93,22 +93,25 @@ $(function() {
             });*/
         //beforeEach, loadFeed with two input, the first element of allFeeds, done()
         //app.js : function init() {loadFeed(0);}
+        var defaultJasTime;
         beforeEach(function(done){
+            defaultJasTime = jasmine.DEFAULT_TIMEOUT_INTERVAL;
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-            loadFeed(0, function(){
-                done();
-            });
+            loadFeed(0, done);
          });
-
         /*
         <div class="feed"></div>
         <script class="tpl-entry" type="text/x-handlebars-template">
             <a class="entry-link" href="{{link}}">
                 <article class="entry">
         ... */
-        it('call loadFeed as init to reload the first resource', function(done) {
+        it('call loadFeed as init to reload the first resource', function() {
             var feedEntry = $(".entry");
             expect(feedEntry.length).not.toBe(0);
+        });
+
+        afterEach(function() {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultJasTime;
         });
     });
 
@@ -121,15 +124,17 @@ $(function() {
 
         var oldFeed;
         var newFeed;
+        var defaultJasTime;
         beforeEach(function(done){
+            defaultJasTime = jasmine.DEFAULT_TIMEOUT_INTERVAL;
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-            loadFeed(0, function(){
-                oldFeed = $(".entry").html();
-                done();
-            });
+            //call async function loadFeed() and done()
             loadFeed(1, function(){
-                newFeed = $(".entry").html();
-                done();
+                oldFeed = $(".entry").html();
+                loadFeed(0, function(){
+                    newFeed = $(".entry").html();
+                    done();
+                });
             });
         });
 
@@ -138,8 +143,12 @@ $(function() {
                done();
            });*/
         it('loadFeed load new resource', function(done) {
-            expect(newFeed).not.toEqual(oldFeed);
+            expect(newFeed == oldFeed).toBeFalsy();
             done();
+        });
+
+       afterEach(function() {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultJasTime;
         });
     });
 
