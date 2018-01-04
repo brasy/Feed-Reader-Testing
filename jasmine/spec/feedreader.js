@@ -99,6 +99,7 @@ $(function() {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
             loadFeed(0, done);
          });
+
         /*
         <div class="feed"></div>
         <script class="tpl-entry" type="text/x-handlebars-template">
